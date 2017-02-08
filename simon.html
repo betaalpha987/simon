@@ -67,14 +67,29 @@
 </head>
 
 <body>
+<audio id = "note0">
+  <source src="sounds/39200__jobro__piano-ff-052.wav" type="audio/wav">
+</audio>
+<audio id = "note1">
+  <source src="sounds/39202__jobro__piano-ff-054.wav" type="audio/wav">
+</audio>
+<audio id = "note2">
+  <source src="sounds/39204__jobro__piano-ff-056.wav" type="audio/wav">
+</audio>
+<audio id = "note3">
+  <source src="sounds/39206__jobro__piano-ff-058.wav" type="audio/wav">
+</audio>
+
 <h1>Simon</h1>
 <p> Level: <span id="disp-level">1</span></p>
+<p><button onclick="restart()">Start</button></p>
 <button id="red-btn" class="sb red-btn" onclick="pressSB(0)"></button><br>
 <button id="blue-btn" class="sb blue-btn" onclick="pressSB(1)"></button><br>
 <button id="yellow-btn" class="sb yellow-btn" onclick="pressSB(2)"></button><br>
 <button id="green-btn" class="sb green-btn" onclick="pressSB(3)"></button>
 
 <script>
+//Note source: https://www.freesound.org/people/jobro/packs/2489/?page=2#sound
 
 // Presented with a random sequence of button presses
 // Each time I enter the sequence correctly I see the same series with an extra step
@@ -90,10 +105,10 @@ let rightSoFar = 0; // How many steps the player gets right this turn
 //let playerTurn=false; // When player can act
 
 const btn = [
-  {elem: document.getElementById("red-btn"), dClass: "sb red-btn", lClass: "sb red-btn-lit"},
-  {elem: document.getElementById("blue-btn"), dClass: "sb blue-btn", lClass: "sb blue-btn-lit"},
-  {elem: document.getElementById("yellow-btn"), dClass: "sb yellow-btn", lClass: "sb yellow-btn-lit"},
-  {elem: document.getElementById("green-btn"), dClass: "sb green-btn", lClass: "sb green-btn-lit"}];
+  {elem: document.getElementById("red-btn"), sound: document.getElementById("note0"), dClass: "sb red-btn", lClass: "sb red-btn-lit"},
+  {elem: document.getElementById("blue-btn"), sound: document.getElementById("note1"), dClass: "sb blue-btn", lClass: "sb blue-btn-lit"},
+  {elem: document.getElementById("yellow-btn"), sound: document.getElementById("note2"), dClass: "sb yellow-btn", lClass: "sb yellow-btn-lit"},
+  {elem: document.getElementById("green-btn"), sound: document.getElementById("note3"), dClass: "sb green-btn", lClass: "sb green-btn-lit"}];
 
 addStep();
 
@@ -101,8 +116,10 @@ replay();
 
 function pressSB(btnPressed) {
   if (btnPressed == sequence[rightSoFar]) {
+
     console.log ("Yup! " + btnPressed + ":" + sequence[rightSoFar]);
     rightSoFar += 1;
+    btn[btnPressed].sound.play();
   } else {
     console.log ("Nope! " + btnPressed + ":" + sequence[rightSoFar]);
     wrongMove();
