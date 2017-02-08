@@ -137,12 +137,10 @@ function restart() { // Handles both starting and restarting
 
 function pressSB(btnPressed) {
   if (btnPressed == sequence[rightSoFar]) {
-    console.log ("Yup! " + btnPressed + ":" + sequence[rightSoFar]);
     rightSoFar += 1;
     btn[btnPressed].sound.currentTime = 0;
     btn[btnPressed].sound.play();
   } else {
-    console.log ("Nope! " + btnPressed + ":" + sequence[rightSoFar]);
     wrongMove();
   }
   if (rightSoFar >= sequence.length) {
@@ -153,8 +151,14 @@ function pressSB(btnPressed) {
 
 function wrongMove() {
   playerTurn(false);
-  rightSoFar = 0;
-  t.wrongMoveTO = setTimeout(()=>replay(), 500);
+  if(strict) {
+  console.log ("Nope! Returning to start.");
+    t.wrongMoveTO = setTimeout(()=>restart(), 1000);
+  } else {
+    console.log ("Nope! Please try again.")
+    rightSoFar = 0;
+    t.wrongMoveTO = setTimeout(()=>replay(), 500);
+  }
 }
 
 function addStep() {
