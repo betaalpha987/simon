@@ -82,7 +82,8 @@
 
 <h1>Simon</h1>
 <p> Level: <span id="disp-level">1</span></p>
-<p><button id="start-btn" onclick="restart()">Start</button></p>
+<p><button id="start-btn" onclick="restart()">Start</button>
+  <button id="strict-btn" onclick="setStrict()">Strict: Off</button></p>
 <button id="red-btn" disabled class="sb red-btn" onclick="pressSB(0)"></button><br>
 <button id="blue-btn" disabled class="sb blue-btn" onclick="pressSB(1)"></button><br>
 <button id="yellow-btn" disabled class="sb yellow-btn" onclick="pressSB(2)"></button><br>
@@ -104,6 +105,7 @@ const sequence = []; // r=0, b=1, y=2, g=3
 let rightSoFar = 0; // How many steps the player gets right this turn
 // Timeout and Set Interval vars: have root scope so I can cancel them on reset
 const t = {}; // Timers - for easily clearing setInterval and setTimeout objects 
+let strict = false;
 
 const btn = [
   {elem: document.getElementById("red-btn"), sound: document.getElementById("note0"), dClass: "sb red-btn", lClass: "sb red-btn-lit"},
@@ -111,6 +113,16 @@ const btn = [
   {elem: document.getElementById("yellow-btn"), sound: document.getElementById("note2"), dClass: "sb yellow-btn", lClass: "sb yellow-btn-lit"},
   {elem: document.getElementById("green-btn"), sound: document.getElementById("note3"), dClass: "sb green-btn", lClass: "sb green-btn-lit"}];
 
+function setStrict() {
+  const strictB = document.getElementById("strict-btn");
+  if (strict) {
+    strict = false;
+    strictB.innerHTML="Strict: Off";
+  } else {
+    strict = true;
+    strictB.innerHTML = "Strict: On";
+  }
+}
 
 function restart() { // Handles both starting and restarting
   for (let prop in t) clearTimeout(t[prop]); // Clear all timeouts and setIntervals
