@@ -49,10 +49,11 @@
 
 <body>
 <h1>Simon</h1>
-<button id="red-btn" disabled class="sb red-btn"></button><br>
-<button id="blue-btn" disabled class="sb blue-btn"></button><br>
-<button id="yellow-btn" class="sb yellow-btn"></button><br>
-<button id="green-btn" class="sb green-btn"></button>
+<p> Level: <span id="disp-level">1</span></p>
+<button id="red-btn" class="sb red-btn" onclick="pressSB(0)"></button><br>
+<button id="blue-btn" class="sb blue-btn" onclick="pressSB(1)"></button><br>
+<button id="yellow-btn" class="sb yellow-btn" onclick="pressSB(2)"></button><br>
+<button id="green-btn" class="sb green-btn" onclick="pressSB(3)"></button>
 
 <script>
 
@@ -66,6 +67,7 @@
 // If I get 20 steps right I win the game, am notified of my victory and the game restarts
 // Bonus: user-settable win steps icluding endless
 let sequence = []; // r=0, b=1, y=2, g=3
+let rightSoFar = 0; // How many steps the player gets right this turn
 //let playerTurn=false; // When player can act
 
 const btn = [
@@ -75,14 +77,31 @@ const btn = [
   {elem: document.getElementById("green-btn"), dClass: "sb green-btn", lClass: "sb green-btn-lit"}];
 
 addStep();
-addStep();
-addStep();
-addStep();
 
 replay();
 
-function replay() {
+function pressSB(btnPressed) {
+  if (btnPressed == sequence[rightSoFar]) {
+    console.log ("Yup! " + btnPressed + ":" + sequence[rightSoFar]);
+    rightSoFar += 1;
+  } else {
+    console.log ("Nope! " + btnPressed + ":" + sequence[rightSoFar]);
+  }
+  if (rightSoFar >= sequence.length) addStep();
+}
+
+function addStep() {
   playerTurn(false);
+  showLev = document.getElementById("disp-level");
+  sequence.push(Math.floor(Math.random()*4));
+  console.log("All correct! Next level.");
+  setTimeout(function() {
+    showLev.innerHTML = sequence.length
+    replay();
+    }, 500);
+}
+
+function replay() {
   let step = 0;
   const play = setInterval(playStep,500);
 
@@ -95,14 +114,11 @@ function replay() {
     step +=1;
     if (step >= sequence.length) {
       clearInterval(play);
-      playerTurn(true);
+      setTimeout(() => playerTurn(true),500);
     }
   }
 }
 
-function addStep() {
-  sequence.push(Math.floor(Math.random()*4));
-}
 
 function playerTurn(isIt) {
   if (isIt) {
