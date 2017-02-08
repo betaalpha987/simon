@@ -17,32 +17,51 @@
 .sb { /* Class for all Simon buttons*/
   height: 100px;
   width: 200px;
+  cursor: pointer;
 }
+.sb:disabled {
+  cursor: not-allowed;
+}
+
 .red-btn {
-  background-color: #900
+  background-color: #900;
 }
-.blue-btn {
-  background-color: #009;
-}
-.yellow-btn {
-  background-color: #990
-}
-.green-btn {
-  background-color: #090;
+.red-btn:active {
+  background-color: #f55;
 }
 .red-btn-lit {
   background-color: #f55;
 }
+
+.blue-btn {
+  background-color: #009;
+}
+.blue-btn:active {
+  background-color: #55f;
+}
 .blue-btn-lit {
   background-color: #55f;
+}
+
+.yellow-btn {
+  background-color: #990
+}
+.yellow-btn:active {
+  background-color: #ff9;
 }
 .yellow-btn-lit {
   background-color: #ff9;
 }
+
+.green-btn {
+  background-color: #090;
+}
+.green-btn:active {
+  background-color: #9f9;
+}
 .green-btn-lit {
   background-color: #9f9;
 }
-
 
 </style>
 </head>
@@ -86,19 +105,29 @@ function pressSB(btnPressed) {
     rightSoFar += 1;
   } else {
     console.log ("Nope! " + btnPressed + ":" + sequence[rightSoFar]);
+    wrongMove();
   }
-  if (rightSoFar >= sequence.length) addStep();
+  if (rightSoFar >= sequence.length) {
+    console.log("All correct! Next level.");
+    addStep();
+  }
+}
+
+function wrongMove() {
+  playerTurn(false);
+  rightSoFar = 0;
+  setTimeout(()=>replay(), 500);
 }
 
 function addStep() {
   playerTurn(false);
   showLev = document.getElementById("disp-level");
   sequence.push(Math.floor(Math.random()*4));
-  console.log("All correct! Next level.");
+  rightSoFar = 0;
   setTimeout(function() {
     showLev.innerHTML = sequence.length
     replay();
-    }, 500);
+  }, 500);
 }
 
 function replay() {
