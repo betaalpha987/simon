@@ -81,9 +81,10 @@
 </audio>
 
 <h1>Simon</h1>
-<p> Level: <span id="disp-level">1</span></p>
+<p id="disp-level">&nbsp;</p>
 <p><button id="start-btn" onclick="restart()">Start</button>
-  <button id="strict-btn" onclick="setStrict()">Strict: Off</button></p>
+  <button id="strict-btn" onclick="setStrict()">Strict: Off</button>
+  <button id="max-level" onclick="setLevel()">Hard (20 levels)</button> </p>
 <button id="red-btn" disabled class="sb red-btn" onclick="pressSB(0)"></button><br>
 <button id="blue-btn" disabled class="sb blue-btn" onclick="pressSB(1)"></button><br>
 <button id="yellow-btn" disabled class="sb yellow-btn" onclick="pressSB(2)"></button><br>
@@ -98,7 +99,7 @@
 // DONE: If I press the wrong button I'm told I have done so and the sequence repeats so I can retry.
 // DONE: I can see how many steps I've gone so far
 // DONE: I can restart to go back to a single step
-// A strict mode option where getting a step wrong returns me to the restart
+// DONE: A strict mode option where getting a step wrong returns me to the restart
 // If I get 20 steps right I win the game, am notified of my victory and the game restarts
 // Bonus: user-settable win steps including endless
 const sequence = []; // r=0, b=1, y=2, g=3
@@ -106,12 +107,16 @@ let rightSoFar = 0; // How many steps the player gets right this turn
 // Timeout and Set Interval vars: have root scope so I can cancel them on reset
 const t = {}; // Timers - for easily clearing setInterval and setTimeout objects 
 let strict = false;
+let maxLev = 20;
 
 const btn = [
   {elem: document.getElementById("red-btn"), sound: document.getElementById("note0"), dClass: "sb red-btn", lClass: "sb red-btn-lit"},
   {elem: document.getElementById("blue-btn"), sound: document.getElementById("note1"), dClass: "sb blue-btn", lClass: "sb blue-btn-lit"},
   {elem: document.getElementById("yellow-btn"), sound: document.getElementById("note2"), dClass: "sb yellow-btn", lClass: "sb yellow-btn-lit"},
   {elem: document.getElementById("green-btn"), sound: document.getElementById("note3"), dClass: "sb green-btn", lClass: "sb green-btn-lit"}];
+
+  let stBtn = document.getElementById("start-btn");
+
 
 function setStrict() {
   const strictB = document.getElementById("strict-btn");
@@ -126,13 +131,18 @@ function setStrict() {
 
 function restart() { // Handles both starting and restarting
   for (let prop in t) clearTimeout(t[prop]); // Clear all timeouts and setIntervals
-  let stBtn = document.getElementById("start-btn");
   stBtn.innerHTML = "Restart";
   playerTurn(false);
   sequence.length = 0;
   rightSoFar = 0;
   btn.forEach((i) => i.elem.className = i.dClass); //Return all buttons to dark
   addStep();
+}
+
+function gameOver() {
+  console.log('Press Start to begin a new game');
+  stBtn.innerHTML = "Start";
+
 }
 
 function pressSB(btnPressed) {
@@ -144,16 +154,21 @@ function pressSB(btnPressed) {
     wrongMove();
   }
   if (rightSoFar >= sequence.length) {
-    console.log("All correct! Next level.");
-    addStep();
+    if (sequence.length >= 5) {
+      console.log("Congrats, you beat the game!");
+      t.gameWonTO = setTimeout(()=>gameOver(), 500);
+    } else {
+      console.log("All correct! Next level.");
+      addStep();
+    }
   }
 }
 
 function wrongMove() {
   playerTurn(false);
   if(strict) {
-  console.log ("Nope! Returning to start.");
-    t.wrongMoveTO = setTimeout(()=>restart(), 1000);
+  console.log ("Nope! You lose.");
+    t.wrongMoveTO = setTimeout(()=>gameOver(), 500);
   } else {
     console.log ("Nope! Please try again.")
     rightSoFar = 0;
@@ -161,13 +176,32 @@ function wrongMove() {
   }
 }
 
+function setLevel() {
+  if (maxLev == 5) maxLev = 10;
+  else if (maxLev == 10) maxLev = 20;
+  else maxLev = 5;
+  updDisplay('level');
+}
+
+function updDisplay(inp, arg) {
+  // Disable max level button from level 2 until game over
+  if (inp == 'level' || inp == 'all') {
+    const showLev = document.getElementById("disp-level");
+    const levBtn = document.getElementById("max-level");
+    showLev.innerHTML = "Level: " + sequence.length + (maxLev == -1 ? "" : " / " + maxLev);
+    if (maxLev == 5) levBtn.innerHTML = "Easy (" + maxLev + " levels)";
+    else if (maxLev == 10) levBtn.innerHTML = "Medium (" + maxLev + " levels)";
+    else levBtn.innerHTML = "Hard (" + maxLev + " levels)";
+  }
+
+}
+
 function addStep() {
   playerTurn(false);
-  showLev = document.getElementById("disp-level");
   sequence.push(Math.floor(Math.random()*4));
   rightSoFar = 0;
   t.addStepTO = setTimeout(function() {
-    showLev.innerHTML = sequence.length
+    updDisplay('level');
     replay();
   }, 500);
 }
