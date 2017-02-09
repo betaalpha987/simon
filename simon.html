@@ -82,6 +82,7 @@
 <audio id = "note3"><source src="sounds/39206__jobro__piano-ff-058.wav" type="audio/wav"></audio>
 
 <h1>Simon</h1>
+<p id="status">Press Start to begin<p>
 <p id="disp-level">&nbsp;</p>
 <p><button id="start-btn" onclick="restart()" data-toggle="tooltip" title="Start a new game" >Start</button>
   <button id="strict-btn" onclick="setStrict()" data-toggle="tooltip" title="Retry as often as you like">Strict: Off</button>
@@ -116,10 +117,10 @@ const btn = [
   {elem: document.getElementById("yellow-btn"), sound: document.getElementById("note2"), dClass: "sb yellow-btn", lClass: "sb yellow-btn-lit"},
   {elem: document.getElementById("green-btn"), sound: document.getElementById("note3"), dClass: "sb green-btn", lClass: "sb green-btn-lit"}];
 
-  let stBtn = document.getElementById("start-btn");
-
 $(document).ready(function() {
-  $('[data-toggle="tooltip"]').tooltip();
+  $('[data-toggle="tooltip"]').tooltip({
+    trigger : 'hover'
+  });
 })
 
 function setStrict() {
@@ -135,7 +136,7 @@ function setStrict() {
 
 function restart() { // Handles both starting and restarting
   for (let prop in t) clearTimeout(t[prop]); // Clear all timeouts and setIntervals
-  stBtn.innerHTML = "Restart";
+  updDisplay('st-btn-restart');
   playerTurn(false);
   sequence.length = 0;
   rightSoFar = 0;
@@ -146,8 +147,9 @@ function restart() { // Handles both starting and restarting
 
 function gameOver() {
   console.log('Press Start to begin a new game');
-  stBtn.innerHTML = "Start";
-
+  updDisplay('st-btn-start');
+  updDisplay('lev-previous');
+  sequence.length = 0; // So system recognises the game's over 
 }
 
 function pressSB(btnPressed) {
@@ -156,9 +158,11 @@ function pressSB(btnPressed) {
     btn[btnPressed].sound.currentTime = 0;
     btn[btnPressed].sound.play();
   } else {
+    playerTurn(false);
     wrongMove();
   }
   if (rightSoFar >= sequence.length) {
+    playerTurn(false);
     if (sequence.length == 1) {
       updDisplay('lev-disable'); // Turn off level adjust button
     }
@@ -173,7 +177,6 @@ function pressSB(btnPressed) {
 }
 
 function wrongMove() {
-  playerTurn(false);
   if(strict) {
   console.log ("Nope! You lose.");
     t.wrongMoveTO = setTimeout(()=>gameOver(), 500);
@@ -203,17 +206,43 @@ function setLevel() {
       updDisplay('lev-easy');
       break;
   }
+  if (sequence.length > 0) {
+    updDisplay('lev-disp');
+  }
 }
 
+// Handles all display changes except to Simon buttons
 function updDisplay(inp, arg) {
   const showLev = document.getElementById("disp-level");
   const levBtn = document.getElementById("max-level");
+  const stBtn = document.getElementById("start-btn");
+  const status = document.getElementById("status");
 
   // Disable max level button from level 2 until game over
   switch (inp) {
+    case 'status-gameOver':
+      status.innerHTML="Game Over";
+      break;
+    case 'status-blank':
+      status.innerHTML="&nbsp;";
+      break;
+    case 'status-nextlev':
+      status.innerHTML="Great! Next level.";
+      break;
+    case 'status-try-again':
+      status.innerHTML="Please try again.";
+      break;
+    case 'st-btn-start':
+      stBtn.innerHTML = "Start";
+      break;
+    case 'st-btn-restart':
+      stBtn.innerHTML = "Restart";
+      break;
     case 'lev-disp':
       showLev.innerHTML = "Level: " + sequence.length + (maxLev == -1 ? "" : " / " + maxLev);
       break;
+    case 'lev-previous':
+      showLev.innerHTML = "Previous " + showLev.innerHTML;
     case 'lev-easy':
       levBtn.innerHTML = "Easy";
       $('#max-level').attr('title', 'Beat level '+maxLev+' to win').tooltip('fixTitle').tooltip('show');
@@ -241,7 +270,6 @@ function updDisplay(inp, arg) {
 }
 
 function addStep() {
-  playerTurn(false);
   sequence.push(Math.floor(Math.random()*4));
   rightSoFar = 0;
   t.addStepTO = setTimeout(function() {
