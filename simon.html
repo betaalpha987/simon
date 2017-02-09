@@ -6,12 +6,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
 <meta name="description" content="Simon game. Test your memory!">
 <meta name="author" content="Kevin Nolan">
 
 <link href="https://fonts.googleapis.com/css?family=Catamaran" rel="stylesheet">
 
-<title>Simon</title>
+<title>Simon Game</title>
 
 <style>
 .sb { /* Class for all Simon buttons*/
@@ -21,6 +25,11 @@
 }
 .sb:disabled {
   cursor: not-allowed;
+}
+
+#max-level:disabled {
+  cursor: not-allowed;
+  background-color: #aaa;
 }
 
 .red-btn {
@@ -67,24 +76,16 @@
 </head>
 
 <body>
-<audio id = "note0">
-  <source src="sounds/39200__jobro__piano-ff-052.wav" type="audio/wav">
-</audio>
-<audio id = "note1">
-  <source src="sounds/39202__jobro__piano-ff-054.wav" type="audio/wav">
-</audio>
-<audio id = "note2">
-  <source src="sounds/39204__jobro__piano-ff-056.wav" type="audio/wav">
-</audio>
-<audio id = "note3">
-  <source src="sounds/39206__jobro__piano-ff-058.wav" type="audio/wav">
-</audio>
+<audio id = "note0"><source src="sounds/39200__jobro__piano-ff-052.wav" type="audio/wav"></audio>
+<audio id = "note1"><source src="sounds/39202__jobro__piano-ff-054.wav" type="audio/wav"></audio>
+<audio id = "note2"><source src="sounds/39204__jobro__piano-ff-056.wav" type="audio/wav"></audio>
+<audio id = "note3"><source src="sounds/39206__jobro__piano-ff-058.wav" type="audio/wav"></audio>
 
 <h1>Simon</h1>
 <p id="disp-level">&nbsp;</p>
-<p><button id="start-btn" onclick="restart()">Start</button>
-  <button id="strict-btn" onclick="setStrict()">Strict: Off</button>
-  <button id="max-level" onclick="setLevel()">Hard (20 levels)</button> </p>
+<p><button id="start-btn" onclick="restart()" data-toggle="tooltip" title="Start a new game" >Start</button>
+  <button id="strict-btn" onclick="setStrict()" data-toggle="tooltip" title="Retry as often as you like">Strict: Off</button>
+  <button id="max-level" onclick="setLevel()" data-toggle="tooltip" title="Beat level 20 to win" >Hard</button> </p>
 <button id="red-btn" disabled class="sb red-btn" onclick="pressSB(0)"></button><br>
 <button id="blue-btn" disabled class="sb blue-btn" onclick="pressSB(1)"></button><br>
 <button id="yellow-btn" disabled class="sb yellow-btn" onclick="pressSB(2)"></button><br>
@@ -117,6 +118,9 @@ const btn = [
 
   let stBtn = document.getElementById("start-btn");
 
+$(document).ready(function() {
+  $('[data-toggle="tooltip"]').tooltip();
+})
 
 function setStrict() {
   const strictB = document.getElementById("strict-btn");
@@ -136,6 +140,7 @@ function restart() { // Handles both starting and restarting
   sequence.length = 0;
   rightSoFar = 0;
   btn.forEach((i) => i.elem.className = i.dClass); //Return all buttons to dark
+  updDisplay('lev-enable');
   addStep();
 }
 
@@ -154,7 +159,10 @@ function pressSB(btnPressed) {
     wrongMove();
   }
   if (rightSoFar >= sequence.length) {
-    if (sequence.length >= 5) {
+    if (sequence.length == 1) {
+      updDisplay('lev-disable'); // Turn off level adjust button
+    }
+    if (sequence.length >= maxLev) {
       console.log("Congrats, you beat the game!");
       t.gameWonTO = setTimeout(()=>gameOver(), 500);
     } else {
@@ -177,21 +185,57 @@ function wrongMove() {
 }
 
 function setLevel() {
-  if (maxLev == 5) maxLev = 10;
-  else if (maxLev == 10) maxLev = 20;
-  else maxLev = 5;
-  updDisplay('level');
+  switch (maxLev) {
+    case 5:
+      maxLev = 10;
+      updDisplay('lev-medium');
+      break;
+    case 10:
+      maxLev = 20;
+      updDisplay('lev-hard');
+      break;
+    case 20:
+      maxLev = -1;
+      updDisplay('lev-inf');
+      break;
+    case -1:
+      maxLev = 5;
+      updDisplay('lev-easy');
+      break;
+  }
 }
 
 function updDisplay(inp, arg) {
+  const showLev = document.getElementById("disp-level");
+  const levBtn = document.getElementById("max-level");
+
   // Disable max level button from level 2 until game over
-  if (inp == 'level' || inp == 'all') {
-    const showLev = document.getElementById("disp-level");
-    const levBtn = document.getElementById("max-level");
-    showLev.innerHTML = "Level: " + sequence.length + (maxLev == -1 ? "" : " / " + maxLev);
-    if (maxLev == 5) levBtn.innerHTML = "Easy (" + maxLev + " levels)";
-    else if (maxLev == 10) levBtn.innerHTML = "Medium (" + maxLev + " levels)";
-    else levBtn.innerHTML = "Hard (" + maxLev + " levels)";
+  switch (inp) {
+    case 'lev-disp':
+      showLev.innerHTML = "Level: " + sequence.length + (maxLev == -1 ? "" : " / " + maxLev);
+      break;
+    case 'lev-easy':
+      levBtn.innerHTML = "Easy";
+      $('#max-level').attr('title', 'Beat level '+maxLev+' to win').tooltip('fixTitle').tooltip('show');
+      break;
+    case 'lev-medium':
+      levBtn.innerHTML = "Medium";
+      $('#max-level').attr('title', 'Beat level '+maxLev+' to win').tooltip('fixTitle').tooltip('show');
+      break;
+    case 'lev-hard':
+      levBtn.innerHTML = "Hard";
+      $('#max-level').attr('title', 'Beat level '+maxLev+' to win').tooltip('fixTitle').tooltip('show');
+      break;
+    case 'lev-inf':
+      levBtn.innerHTML = "Infinite";
+      $('#max-level').attr('title', 'No level cap').tooltip('fixTitle').tooltip('show');
+      break;
+    case 'lev-disable':
+      levBtn.disabled=true;
+      break;
+    case 'lev-enable':
+      levBtn.disabled=false;
+      break;
   }
 
 }
@@ -201,7 +245,7 @@ function addStep() {
   sequence.push(Math.floor(Math.random()*4));
   rightSoFar = 0;
   t.addStepTO = setTimeout(function() {
-    updDisplay('level');
+    updDisplay('lev-disp');
     replay();
   }, 500);
 }
