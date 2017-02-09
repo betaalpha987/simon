@@ -146,7 +146,7 @@ function restart() { // Handles both starting and restarting
 }
 
 function gameOver() {
-  console.log('Press Start to begin a new game');
+  updDisplay('status-game-over');
   updDisplay('st-btn-start');
   updDisplay('lev-previous');
   sequence.length = 0; // So system recognises the game's over 
@@ -167,10 +167,10 @@ function pressSB(btnPressed) {
       updDisplay('lev-disable'); // Turn off level adjust button
     }
     if (sequence.length >= maxLev) {
-      console.log("Congrats, you beat the game!");
+      updDisplay("status-won");
       t.gameWonTO = setTimeout(()=>gameOver(), 500);
     } else {
-      console.log("All correct! Next level.");
+      updDisplay('status-next-level')
       addStep();
     }
   }
@@ -178,10 +178,10 @@ function pressSB(btnPressed) {
 
 function wrongMove() {
   if(strict) {
-  console.log ("Nope! You lose.");
+    updDisplay('status-game-over')
     t.wrongMoveTO = setTimeout(()=>gameOver(), 500);
   } else {
-    console.log ("Nope! Please try again.")
+    updDisplay('status-try-again');
     rightSoFar = 0;
     t.wrongMoveTO = setTimeout(()=>replay(), 500);
   }
@@ -220,17 +220,20 @@ function updDisplay(inp, arg) {
 
   // Disable max level button from level 2 until game over
   switch (inp) {
-    case 'status-gameOver':
+    case 'status-game-over':
       status.innerHTML="Game Over";
       break;
     case 'status-blank':
       status.innerHTML="&nbsp;";
       break;
-    case 'status-nextlev':
+    case 'status-next-level':
       status.innerHTML="Great! Next level.";
       break;
     case 'status-try-again':
       status.innerHTML="Please try again.";
+      break;
+    case 'status-won':
+      status.innerHTML="Congratulations, you beat the game!";
       break;
     case 'st-btn-start':
       stBtn.innerHTML = "Start";
@@ -243,6 +246,7 @@ function updDisplay(inp, arg) {
       break;
     case 'lev-previous':
       showLev.innerHTML = "Previous " + showLev.innerHTML;
+      break;
     case 'lev-easy':
       levBtn.innerHTML = "Easy";
       $('#max-level').attr('title', 'Beat level '+maxLev+' to win').tooltip('fixTitle').tooltip('show');
@@ -297,6 +301,7 @@ function replay() {
       t.playerTurnTO = setTimeout(() => playerTurn(true),500);
     }
   }
+  updDisplay('status-blank');
 }
 
 function playerTurn(isIt) {
