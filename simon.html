@@ -215,9 +215,13 @@ $(document).ready(function() {
 $(window).resize(scaleFonts);
 
 function scaleFonts() {
-  let fontSize = parseInt($("#status").height())/2 + "px";
-  console.log(fontSize);
-  $("#status").css('font-size', fontSize);
+  doScale("#status");
+  doScale("#disp-level");
+  // Dynamically scale fonts to the height of their parent element
+  function doScale(elem) {
+    let fontSize = parseInt($(elem).height())/2 + "px";
+    $(elem).css('font-size', fontSize);
+  }
 }
 
 function setStrict() {
