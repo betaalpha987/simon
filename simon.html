@@ -23,7 +23,49 @@ body {
     background-color: #222;
     color: white;
 }
-.
+
+.contain {
+  position: absolute;
+  height: 95vmin;
+  width: 95vmin;
+  min-width: 400px;
+  min-height: 400px;
+  max-height: 800px;
+  max-width: 800px;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+}
+
+.options-pnl {
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  height: 15%;
+  width: 100%;
+  border: 1px solid green;
+  text-align: center;
+}
+.simon-pnl {
+  position: absolute;
+  top: 15%;
+  left: 0%;
+  height: 60%;
+  width: 100%;
+  border: 1px solid red;
+  text-align: center;
+
+}
+.status-pnl {
+  position: absolute;
+  top: 75%;
+  left: 0%;
+  height: 25%;
+  width: 100%;
+  border: 1px solid purple;
+  text-align: center;
+
+}
 
 .sb { /* Class for all Simon buttons*/
   height: 100px;
@@ -37,6 +79,15 @@ body {
 #max-level:disabled {
   cursor: not-allowed;
   background-color: #aaa;
+}
+
+#status {
+  border: 1px orange solid;
+  font-size: 5vw;
+}
+#disp-level {
+  font-size: 2%;
+  border: 1px grey solid;
 }
 
 /*
@@ -97,18 +148,23 @@ font-family: 'Catamaran', sans-serif;
 <audio id = "note1"><source src="sounds/39202__jobro__piano-ff-054.wav" type="audio/wav"></audio>
 <audio id = "note2"><source src="sounds/39204__jobro__piano-ff-056.wav" type="audio/wav"></audio>
 <audio id = "note3"><source src="sounds/39206__jobro__piano-ff-058.wav" type="audio/wav"></audio>
-
-<h1>Simon</h1>
-<p id="status">Press Start to begin<p>
-<p id="disp-level">&nbsp;</p>
-<p><button id="start-btn" onclick="restart()" data-toggle="tooltip" title="Start a new game" >Start</button>
-  <button id="strict-btn" onclick="setStrict()" data-toggle="tooltip" title="Retry as often as you like">Strict: Off</button>
-  <button id="max-level" onclick="setLevel()" data-toggle="tooltip" title="Beat level 20 to win" >Hard</button> </p>
-<button id="red-btn" disabled class="sb red-btn" onclick="pressSB(0)"></button><br>
-<button id="blue-btn" disabled class="sb blue-btn" onclick="pressSB(1)"></button><br>
-<button id="yellow-btn" disabled class="sb yellow-btn" onclick="pressSB(2)"></button><br>
-<button id="green-btn" disabled class="sb green-btn" onclick="pressSB(3)"></button>
-
+<div class="contain">
+  <div class="options-pnl">
+    <button id="start-btn" onclick="restart()" data-toggle="tooltip" title="Start a new game" >Start</button>
+    <button id="strict-btn" onclick="setStrict()" data-toggle="tooltip" title="Retry as often as you like">Strict: Off</button>
+    <button id="max-level" onclick="setLevel()" data-toggle="tooltip" title="Beat level 20 to win" >Hard</button> 
+  </div>
+  <div class="simon-pnl">
+  <button id="red-btn" disabled class="sb red-btn" onclick="pressSB(0)"></button><br>
+  <button id="blue-btn" disabled class="sb blue-btn" onclick="pressSB(1)"></button><br>
+  <button id="yellow-btn" disabled class="sb yellow-btn" onclick="pressSB(2)"></button><br>
+  <button id="green-btn" disabled class="sb green-btn" onclick="pressSB(3)"></button>
+  </div>
+  <div class="status-pnl">
+    <div id="status">Press Start to begin</div>
+    <div id="disp-level">&nbsp;</div>
+  </div>
+</div>
 <script>
 //Note source: https://www.freesound.org/people/jobro/packs/2489/?page=2#sound
 // Button source: http://www.freepik.com/free-vector/colorful-glossy-buttons_746557.htm - Designed by Freepik
