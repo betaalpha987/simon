@@ -56,16 +56,25 @@ body {
   text-align: center;
 
 }
-.status-pnl {
+#status {
   position: absolute;
   top: 75%;
   left: 0%;
-  height: 25%;
+  height: 10%;
   width: 100%;
   border: 1px solid purple;
   text-align: center;
-
 }
+#disp-level {
+  position: absolute;
+  top: 85%;
+  left: 0%;
+  height: 10%;
+  width: 100%;
+  border: 1px solid grey;
+  text-align: center;
+}
+
 
 .sb { /* Class for all Simon buttons*/
   height: 100px;
@@ -81,14 +90,21 @@ body {
   background-color: #aaa;
 }
 
-#status {
+/*#status {
+  position:absolute;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 5%;
+
   border: 1px orange solid;
-  font-size: 5vw;
+  font-size:16pt;
+  line-height: 300%;
 }
 #disp-level {
   font-size: 2%;
   border: 1px grey solid;
-}
+}*/
 
 /*
 font-family: 'Orbitron', sans-serif;
@@ -160,10 +176,8 @@ font-family: 'Catamaran', sans-serif;
   <button id="yellow-btn" disabled class="sb yellow-btn" onclick="pressSB(2)"></button><br>
   <button id="green-btn" disabled class="sb green-btn" onclick="pressSB(3)"></button>
   </div>
-  <div class="status-pnl">
-    <div id="status">Press Start to begin</div>
-    <div id="disp-level">&nbsp;</div>
-  </div>
+  <div id="status">Press Start to begin</div>
+  <div id="disp-level">&nbsp;</div>
 </div>
 <script>
 //Note source: https://www.freesound.org/people/jobro/packs/2489/?page=2#sound
@@ -192,10 +206,19 @@ const btn = [
   {elem: document.getElementById("green-btn"), sound: document.getElementById("note3"), dClass: "sb green-btn", lClass: "sb green-btn-lit"}];
 
 $(document).ready(function() {
+  scaleFonts();
   $('[data-toggle="tooltip"]').tooltip({
     trigger : 'hover'
   });
-})
+});
+
+$(window).resize(scaleFonts);
+
+function scaleFonts() {
+  let fontSize = parseInt($("#status").height())/2 + "px";
+  console.log(fontSize);
+  $("#status").css('font-size', fontSize);
+}
 
 function setStrict() {
   const strictB = document.getElementById("strict-btn");
