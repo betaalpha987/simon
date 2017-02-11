@@ -111,12 +111,14 @@ font-family: 'Catamaran', sans-serif;
 }
 .sb-r:active {
   background-image: url("images/btn_red_lit.svg");
+  filter:drop-shadow(0px 0px 2vmin #fbb);
 }
 .sb-r-normal { /*Normal (dark until pressed) red Simon button*/
     background-image: url("images/btn_red_dark.svg");
 }
 .sb-r-lit { /*Always-lit red Simon button*/
   background-image: url("images/btn_red_lit.svg");
+  filter:drop-shadow(0px 0px 2vmin #fbb);
 }
 
 .sb-b { 
@@ -125,12 +127,14 @@ font-family: 'Catamaran', sans-serif;
 }
 .sb-b:active {
   background-image: url("images/btn_blue_lit.svg");
+  filter:drop-shadow(0px 0px 2vmin #bbf);
 }
 .sb-b-normal { 
     background-image: url("images/btn_blue_dark.svg");
 }
 .sb-b-lit { 
   background-image: url("images/btn_blue_lit.svg");
+  filter:drop-shadow(0px 0px 2vmin #bbf);
 }
 
 .sb-y { 
@@ -139,12 +143,15 @@ font-family: 'Catamaran', sans-serif;
 }
 .sb-y:active {
   background-image: url("images/btn_yellow_lit.svg");
+  filter:drop-shadow(0px 0px 2vmin #ffb);
 }
 .sb-y-normal { 
     background-image: url("images/btn_yellow_dark.svg");
 }
 .sb-y-lit { 
   background-image: url("images/btn_yellow_lit.svg");
+  filter:drop-shadow(0px 0px 2vmin #ffb);
+
 }
 
 .sb-g { 
@@ -153,12 +160,14 @@ font-family: 'Catamaran', sans-serif;
 }
 .sb-g:active {
   background-image: url("images/btn_green_lit.svg");
+  filter:drop-shadow(0px 0px 2vmin #bfb);
 }
 .sb-g-normal { 
     background-image: url("images/btn_green_dark.svg");
 }
 .sb-g-lit { 
   background-image: url("images/btn_green_lit.svg");
+  filter:drop-shadow(0px 0px 2vmin #bfb);
 }
 
 
@@ -177,10 +186,10 @@ font-family: 'Catamaran', sans-serif;
     <button id="max-level" onclick="setLevel()" data-toggle="tooltip" title="Beat level 20 to win" >Hard</button> 
   </div>
   <div class="simon-pnl">
-  <button id="red-btn" disabled class="sb sb-r sb-r-normal" onclick="pressSB(0)"></button><br>
-  <button id="blue-btn" disabled class="sb sb-b sb-b-normal" onclick="pressSB(1)"></button><br>
-  <button id="yellow-btn" disabled class="sb sb-y sb-y-normal" onclick="pressSB(2)"></button><br>
-  <button id="green-btn" disabled class="sb sb-g sb-g-normal" onclick="pressSB(3)"></button>
+  <button id="red-btn" disabled class="sb sb-r sb-r-lit" onclick="pressSB(0)"></button><br>
+  <button id="blue-btn" disabled class="sb sb-b sb-b-lit" onclick="pressSB(1)"></button><br>
+  <button id="yellow-btn" disabled class="sb sb-y sb-y-lit" onclick="pressSB(2)"></button><br>
+  <button id="green-btn" disabled class="sb sb-g sb-g-lit" onclick="pressSB(3)"></button>
   </div>
   <div id="status">Press Start to begin</div>
   <div id="disp-level">&nbsp;</div>
@@ -247,16 +256,21 @@ function restart() { // Handles both starting and restarting
   playerTurn(false);
   sequence.length = 0;
   rightSoFar = 0;
-  btn.forEach((i) => i.elem.className = i.dClass); //Return all buttons to dark
+  allButtonsGo('dark');
   updDisplay('lev-enable');
   addStep();
+}
+
+function allButtonsGo(ar) { // Make all buttons lit or dark
+  btn.forEach((i) => i.elem.className = ((ar == 'lit') ? i.lClass : i.dClass)); 
 }
 
 function gameOver() {
   updDisplay('status-game-over');
   updDisplay('st-btn-start');
   updDisplay('lev-previous');
-  sequence.length = 0; // So system recognises the game's over 
+  allButtonsGo('lit');
+  sequence.length = 0; // So system recognises the game's over
 }
 
 function pressSB(btnPressed) {
