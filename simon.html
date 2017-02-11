@@ -75,36 +75,10 @@ body {
   text-align: center;
 }
 
-
-.sb { /* Class for all Simon buttons*/
-  height: 100px;
-  width: 200px;
-  cursor: pointer;
-}
-.sb:disabled {
-  cursor: not-allowed;
-}
-
 #max-level:disabled {
   cursor: not-allowed;
   background-color: #aaa;
-}
-
-/*#status {
-  position:absolute;
-  top: 0%;
-  left: 0%;
-  width: 100%;
-  height: 5%;
-
-  border: 1px orange solid;
-  font-size:16pt;
-  line-height: 300%;
-}
-#disp-level {
-  font-size: 2%;
-  border: 1px grey solid;
-}*/
+} 
 
 /*
 font-family: 'Orbitron', sans-serif;
@@ -116,45 +90,77 @@ font-family: 'Nova Mono', monospace;
 font-family: 'Catamaran', sans-serif;
 */
 
-.red-btn {
-  background-color: #900;
+.sb { /* Class for all Simon buttons*/
+  height: 120px;
+  width: 210px;
+  cursor: pointer;
+  border: 0px;
+  position: absolute;
+  background-color:transparent;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  border: 0px;
 }
-.red-btn:active {
-  background-color: #f55;
-}
-.red-btn-lit {
-  background-color: #f55;
-}
-
-.blue-btn {
-  background-color: #009;
-}
-.blue-btn:active {
-  background-color: #55f;
-}
-.blue-btn-lit {
-  background-color: #55f;
+.sb:disabled {
+  cursor: not-allowed;
 }
 
-.yellow-btn {
-  background-color: #990
+.sb-r { /*Class for both red Simon buttons*/
+  top: 10%;
+  left: 10%;
 }
-.yellow-btn:active {
-  background-color: #ff9;
+.sb-r:active {
+  background-image: url("images/btn_red_lit.svg");
 }
-.yellow-btn-lit {
-  background-color: #ff9;
+.sb-r-normal { /*Normal (dark until pressed) red Simon button*/
+    background-image: url("images/btn_red_dark.svg");
+}
+.sb-r-lit { /*Always-lit red Simon button*/
+  background-image: url("images/btn_red_lit.svg");
 }
 
-.green-btn {
-  background-color: #090;
+.sb-b { 
+  top: 10%;
+  right: 10%;
 }
-.green-btn:active {
-  background-color: #9f9;
+.sb-b:active {
+  background-image: url("images/btn_blue_lit.svg");
 }
-.green-btn-lit {
-  background-color: #9f9;
+.sb-b-normal { 
+    background-image: url("images/btn_blue_dark.svg");
 }
+.sb-b-lit { 
+  background-image: url("images/btn_blue_lit.svg");
+}
+
+.sb-y { 
+  bottom: 10%;
+  left: 10%;
+}
+.sb-y:active {
+  background-image: url("images/btn_yellow_lit.svg");
+}
+.sb-y-normal { 
+    background-image: url("images/btn_yellow_dark.svg");
+}
+.sb-y-lit { 
+  background-image: url("images/btn_yellow_lit.svg");
+}
+
+.sb-g { 
+  bottom: 10%;
+  right: 10%;
+}
+.sb-g:active {
+  background-image: url("images/btn_green_lit.svg");
+}
+.sb-g-normal { 
+    background-image: url("images/btn_green_dark.svg");
+}
+.sb-g-lit { 
+  background-image: url("images/btn_green_lit.svg");
+}
+
 
 </style>
 </head>
@@ -171,10 +177,10 @@ font-family: 'Catamaran', sans-serif;
     <button id="max-level" onclick="setLevel()" data-toggle="tooltip" title="Beat level 20 to win" >Hard</button> 
   </div>
   <div class="simon-pnl">
-  <button id="red-btn" disabled class="sb red-btn" onclick="pressSB(0)"></button><br>
-  <button id="blue-btn" disabled class="sb blue-btn" onclick="pressSB(1)"></button><br>
-  <button id="yellow-btn" disabled class="sb yellow-btn" onclick="pressSB(2)"></button><br>
-  <button id="green-btn" disabled class="sb green-btn" onclick="pressSB(3)"></button>
+  <button id="red-btn" disabled class="sb sb-r sb-r-normal" onclick="pressSB(0)"></button><br>
+  <button id="blue-btn" disabled class="sb sb-b sb-b-normal" onclick="pressSB(1)"></button><br>
+  <button id="yellow-btn" disabled class="sb sb-y sb-y-normal" onclick="pressSB(2)"></button><br>
+  <button id="green-btn" disabled class="sb sb-g sb-g-normal" onclick="pressSB(3)"></button>
   </div>
   <div id="status">Press Start to begin</div>
   <div id="disp-level">&nbsp;</div>
@@ -200,10 +206,10 @@ let strict = false;
 let maxLev = 20;
 
 const btn = [
-  {elem: document.getElementById("red-btn"), sound: document.getElementById("note0"), dClass: "sb red-btn", lClass: "sb red-btn-lit"},
-  {elem: document.getElementById("blue-btn"), sound: document.getElementById("note1"), dClass: "sb blue-btn", lClass: "sb blue-btn-lit"},
-  {elem: document.getElementById("yellow-btn"), sound: document.getElementById("note2"), dClass: "sb yellow-btn", lClass: "sb yellow-btn-lit"},
-  {elem: document.getElementById("green-btn"), sound: document.getElementById("note3"), dClass: "sb green-btn", lClass: "sb green-btn-lit"}];
+  {elem: document.getElementById("red-btn"), sound: document.getElementById("note0"), dClass: "sb sb-r sb-r-normal", lClass: "sb sb-r sb-r-lit"},
+  {elem: document.getElementById("blue-btn"), sound: document.getElementById("note1"), dClass: "sb sb-b sb-b-normal", lClass: "sb sb-b sb-b-lit"},
+  {elem: document.getElementById("yellow-btn"), sound: document.getElementById("note2"), dClass: "sb sb-y sb-y-normal", lClass: "sb sb-y sb-y-lit"},
+  {elem: document.getElementById("green-btn"), sound: document.getElementById("note3"), dClass: "sb sb-g sb-g-normal", lClass: "sb sb-g sb-g-lit"}];
 
 $(document).ready(function() {
   scaleFonts();
@@ -215,9 +221,9 @@ $(document).ready(function() {
 $(window).resize(scaleFonts);
 
 function scaleFonts() {
+  // Dynamically scale fonts to the height of their parent element
   doScale("#status");
   doScale("#disp-level");
-  // Dynamically scale fonts to the height of their parent element
   function doScale(elem) {
     let fontSize = parseInt($(elem).height())/2 + "px";
     $(elem).css('font-size', fontSize);
