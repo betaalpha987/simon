@@ -13,7 +13,7 @@
 <meta name="description" content="Simon game. Test your memory!">
 <meta name="author" content="Kevin Nolan">
 
-<link href="https://fonts.googleapis.com/css?family=Audiowide|Catamaran|Nova+Mono|Nova+Square|Orbitron|Revalia|Righteous" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Catamaran|Righteous" rel="stylesheet">
 
 <title>Simon Game</title>
 
@@ -22,6 +22,7 @@ body {
     box-sizing: border-box;
     background-color: #222;
     color: white;
+    font-family: 'Catamaran', sans-serif;
 }
 
 .contain {
@@ -43,7 +44,6 @@ body {
   left: 0%;
   height: 10%;
   width: 100%;
-  border: 1px solid green;
   text-align: center;
 }
 .simon-pnl {
@@ -52,18 +52,17 @@ body {
   left: 0%;
   height: 70%;
   width: 100%;
-  border: 1px solid red;
   text-align: center;
-
 }
 #status {
+  color: #fcc;
   position: absolute;
   top: 80%;
   left: 0%;
   height: 10%;
   width: 100%;
-  border: 1px solid purple;
   text-align: center;
+  font-family: 'Righteous', cursive;
 }
 #disp-level {
   position: absolute;
@@ -71,8 +70,9 @@ body {
   left: 0%;
   height: 10%;
   width: 100%;
-  border: 1px solid grey;
   text-align: center;
+  font-family: 'Righteous', cursive;
+  color: #ffc;
 }
 
 #max-level:disabled {
@@ -81,8 +81,8 @@ body {
 } 
 
 /*
-font-family: 'Orbitron', sans-serif;
-font-family: 'Righteous', cursive;
+x font-family: 'Orbitron', sans-serif;
+  font-family: 'Righteous', cursive;
 font-family: 'Audiowide', cursive;
 font-family: 'Nova Square', cursive;
 font-family: 'Revalia', cursive;
@@ -139,7 +139,7 @@ font-family: 'Catamaran', sans-serif;
 
 .sb-y { 
   bottom: 1%;
-  left: 1%;
+  right: 1%;
 }
 .sb-y:active {
   background-image: url("images/btn_yellow_lit.svg");
@@ -156,7 +156,7 @@ font-family: 'Catamaran', sans-serif;
 
 .sb-g { 
   bottom: 1%;
-  right: 1%;
+  left: 1%;
 }
 .sb-g:active {
   background-image: url("images/btn_green_lit.svg");
@@ -186,10 +186,10 @@ font-family: 'Catamaran', sans-serif;
     <button id="max-level" onclick="setLevel()" data-toggle="tooltip" title="Beat level 20 to win" >Hard</button> 
   </div>
   <div class="simon-pnl">
-  <button id="red-btn" disabled class="sb sb-r sb-r-lit" onclick="pressSB(0)"></button><br>
-  <button id="blue-btn" disabled class="sb sb-b sb-b-lit" onclick="pressSB(1)"></button><br>
-  <button id="yellow-btn" disabled class="sb sb-y sb-y-lit" onclick="pressSB(2)"></button><br>
-  <button id="green-btn" disabled class="sb sb-g sb-g-lit" onclick="pressSB(3)"></button>
+  <button id="red-btn" disabled class="sb sb-r sb-r-normal" onclick="pressSB(0)"></button><br>
+  <button id="blue-btn" disabled class="sb sb-b sb-b-normal" onclick="pressSB(1)"></button><br>
+  <button id="yellow-btn" disabled class="sb sb-y sb-y-normal" onclick="pressSB(2)"></button><br>
+  <button id="green-btn" disabled class="sb sb-g sb-g-normal" onclick="pressSB(3)"></button>
   </div>
   <div id="status">Press Start to begin</div>
   <div id="disp-level">&nbsp;</div>
@@ -222,6 +222,7 @@ const btn = [
 
 $(document).ready(function() {
   scaleFonts();
+  allButtonsGo('cycle');
   $('[data-toggle="tooltip"]').tooltip({
     trigger : 'hover'
   });
@@ -262,14 +263,27 @@ function restart() { // Handles both starting and restarting
 }
 
 function allButtonsGo(ar) { // Make all buttons lit or dark
-  btn.forEach((i) => i.elem.className = ((ar == 'lit') ? i.lClass : i.dClass)); 
+  if (ar == 'lit') {
+    btn.forEach((i) => i.elem.className = i.lClass);
+  } else if (ar == 'dark') {
+    btn.forEach((i) => i.elem.className = i.dClass);
+  } else { // cycle
+    let l = 0; let d = 3;
+    t.cycle = setInterval(function() {
+      l += 1; d +=1;
+      l = (l > 3 ? 0 : l );
+      d = (d > 3 ? 0 : d );
+      btn[l].elem.className = btn[l].lClass;
+      btn[d].elem.className = btn[d].dClass;
+    },1000);
+  }
 }
 
 function gameOver() {
   updDisplay('status-game-over');
   updDisplay('st-btn-start');
   updDisplay('lev-previous');
-  allButtonsGo('lit');
+  allButtonsGo('cycle');
   sequence.length = 0; // So system recognises the game's over
 }
 
@@ -300,7 +314,7 @@ function pressSB(btnPressed) {
 function wrongMove() {
   if(strict) {
     updDisplay('status-game-over')
-    t.wrongMoveTO = setTimeout(()=>gameOver(), 500);
+    t.wrongMoveTO = setTimeout(()=>gameOver(), 1500);
   } else {
     updDisplay('status-try-again');
     rightSoFar = 0;
@@ -339,7 +353,6 @@ function updDisplay(inp, arg) {
   const stBtn = document.getElementById("start-btn");
   const status = document.getElementById("status");
 
-  // Disable max level button from level 2 until game over
   switch (inp) {
     case 'status-game-over':
       status.innerHTML="Game Over";
