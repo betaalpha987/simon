@@ -40,35 +40,48 @@ body {
 
 .options-pnl {
   position: absolute;
-  top: 0%;
+  top: 5%;
   left: 0%;
   height: 10%;
   width: 100%;
   text-align: center;
 }
+.btn-md {
+  line-height:90%;
+  width: 30%;
+  height: 80%;
+}
+.btn-lg {
+  line-height:90%;
+  width: 30%;
+  height: 100%;
+}
+
 .simon-pnl {
   position: absolute;
-  top: 10%;
+  top: 17%;
   left: 0%;
   height: 70%;
   width: 100%;
   text-align: center;
 }
+
 #status {
   color: #fcc;
   position: absolute;
-  top: 80%;
+  top: 87%;
   left: 0%;
-  height: 10%;
+  height: 5%;
   width: 100%;
   text-align: center;
   font-family: 'Righteous', cursive;
 }
+
 #disp-level {
   position: absolute;
-  top: 90%;
+  top: 94%;
   left: 0%;
-  height: 10%;
+  height: 5%;
   width: 100%;
   text-align: center;
   font-family: 'Righteous', cursive;
@@ -174,9 +187,11 @@ body {
 <audio id = "note3"><source src="sounds/39206__jobro__piano-ff-058.wav" type="audio/wav"></audio>
 <div class="contain">
   <div class="options-pnl">
-    <button id="start-btn" onclick="restart()" data-toggle="tooltip" title="Start a new game" >Start</button>
-    <button id="strict-btn" onclick="setStrict()" data-toggle="tooltip" title="Retry as often as you like">Strict: Off</button>
-    <button id="max-level" onclick="setLevel()" data-toggle="tooltip" title="Beat level 20 to win" >Hard</button> 
+    <button class="btn btn-primary btn-md" id="strict-btn" onclick="setStrict()" data-toggle="tooltip" title="Retry as often as you like">Strict: Off</button>
+    &nbsp;
+    <button class="btn btn-success btn-lg" id="start-btn" onclick="restart()" data-toggle="tooltip" title="Start a new game" >Start</button>
+    &nbsp;
+    <button class="btn btn-primary btn-md" id="max-level" onclick="setLevel()" data-toggle="tooltip" title="Beat level 20 to win" >Hard</button> 
   </div>
   <div class="simon-pnl">
   <button id="red-btn" disabled class="sb sb-r sb-r-normal" onclick="pressSB(0)"></button><br>
@@ -216,11 +231,13 @@ $(window).resize(scaleFonts);
 
 function scaleFonts() {
   // Dynamically scale fonts to the height of their parent element
-  doScale("#status");
-  doScale("#disp-level");
-  function doScale(elem) {
-    let fontSize = parseInt($(elem).height())/2 + "px";
-    $(elem).css('font-size', fontSize);
+  doScale("#status","#disp-level","#strict-btn","#start-btn","#max-level");
+  function doScale() {
+    let elems = Array.prototype.slice.call(arguments);
+    elems.forEach(function(val) {
+      let fontSize = parseInt($(val).height()) + "px";
+      $(val).css('font-size', fontSize);
+    });
   }
 }
 
