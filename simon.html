@@ -224,16 +224,116 @@ function scaleFonts() {
   }
 }
 
-function setStrict() {
-  const strictB = document.getElementById("strict-btn");
-  if (strict) {
-    strict = false;
-    strictB.innerHTML="Strict: Off";
-  } else {
-    strict = true;
-    strictB.innerHTML = "Strict: On";
+function setLevel() {
+  switch (maxLev) {
+    case 5:
+      maxLev = 10;
+      updDisplay('lev-medium');
+      break;
+    case 10:
+      maxLev = 20;
+      updDisplay('lev-hard');
+      break;
+    case 20:
+      maxLev = -1;
+      updDisplay('lev-inf');
+      break;
+    case -1:
+      maxLev = 5;
+      updDisplay('lev-easy');
+      break;
+  }
+  if (sequence.length > 0) {
+    updDisplay('lev-disp');
   }
 }
+
+function setStrict() {
+  if (strict) {
+    strict = false;
+    updDisplay('strict-off')
+  } else {
+    strict = true;
+    updDisplay('strict-on');
+  }
+}
+
+// Handles all display changes except to Simon buttons
+function updDisplay(inp, arg) {
+  const showLev = document.getElementById("disp-level");
+  const levBtn = document.getElementById("max-level");
+  const stBtn = document.getElementById("start-btn");
+  const status = document.getElementById("status");
+  const strictB = document.getElementById("strict-btn");
+  
+  function showInStatus(msg) {
+    if (t.statusMsg) clearTimeout(t.statusMsg); // Clear any existing status message timers
+    status.innerHTML=msg;
+    t.statusMsg = setTimeout(() => status.innerHTML="&nbsp;",2000); // Clear message after 2 seconds
+  }
+
+  switch (inp) {
+    case 'status-game-over':
+      showInStatus("Game over");
+      break;
+    case 'status-new':
+      showInStatus("New game");
+      break;
+    case 'status-next-level':
+      showInStatus("Great! Next level.");
+      break;
+    case 'status-try-again':
+      showInStatus("Please try again.");
+      break;
+    case 'status-won':
+      showInStatus("Congratulations, you beat the game!");
+      break;
+    case 'st-btn-start':
+      stBtn.innerHTML = "Start";
+      break;
+    case 'st-btn-restart':
+      stBtn.innerHTML = "Restart";
+      break;
+    case 'lev-disp':
+      showLev.innerHTML = "Level: " + sequence.length + (maxLev == -1 ? "" : " / " + maxLev);
+      break;
+    case 'lev-previous':
+      showLev.innerHTML = "You reached: " + showLev.innerHTML;
+      break;
+    case 'strict-on':
+      strictB.innerHTML = "Strict: On";
+      $('#strict-btn').attr('title',"Game over if you don't match a sequence").tooltip('fixTitle').tooltip('show');
+      break;
+    case 'strict-off':
+      strictB.innerHTML = "Strict: Off";
+      $('#strict-btn').attr('title','Retry as often as you like').tooltip('fixTitle').tooltip('show');
+      break;
+    case 'lev-easy':
+      levBtn.innerHTML = "Easy";
+      $('#max-level').attr('title', 'Beat level '+maxLev+' to win').tooltip('fixTitle').tooltip('show');
+      break;
+    case 'lev-medium':
+      levBtn.innerHTML = "Medium";
+      $('#max-level').attr('title', 'Beat level '+maxLev+' to win').tooltip('fixTitle').tooltip('show');
+      break;
+    case 'lev-hard':
+      levBtn.innerHTML = "Hard";
+      $('#max-level').attr('title', 'Beat level '+maxLev+' to win').tooltip('fixTitle').tooltip('show');
+      break;
+    case 'lev-inf':
+      levBtn.innerHTML = "Infinite";
+      $('#max-level').attr('title', 'No level cap').tooltip('fixTitle').tooltip('show');
+      break;
+    case 'lev-disable':
+      levBtn.disabled=true;
+      break;
+    case 'lev-enable':
+      levBtn.disabled=false;
+      break;
+  }
+}
+
+
 
 function restart() { // Handles both starting and restarting
   for (let prop in t) clearTimeout(t[prop]); // Clear all timeouts and setIntervals
@@ -305,103 +405,6 @@ function wrongMove() {
     rightSoFar = 0;
     t.wrongMoveTO = setTimeout(()=>replay(), 500);
   }
-}
-
-function setLevel() {
-  switch (maxLev) {
-    case 5:
-      maxLev = 10;
-      updDisplay('lev-medium');
-      break;
-    case 10:
-      maxLev = 20;
-      updDisplay('lev-hard');
-      break;
-    case 20:
-      maxLev = -1;
-      updDisplay('lev-inf');
-      break;
-    case -1:
-      maxLev = 5;
-      updDisplay('lev-easy');
-      break;
-  }
-  if (sequence.length > 0) {
-    updDisplay('lev-disp');
-  }
-}
-
-// Handles all display changes except to Simon buttons
-function updDisplay(inp, arg) {
-  const showLev = document.getElementById("disp-level");
-  const levBtn = document.getElementById("max-level");
-  const stBtn = document.getElementById("start-btn");
-  const status = document.getElementById("status");
-
-  function showInStatus(msg) {
-    if (t.statusMsg) clearTimeout(t.statusMsg); // Clear any existing status message timers
-    status.innerHTML=msg;
-    t.statusMsg = setTimeout(() => status.innerHTML="&nbsp;",2000); // Clear message after 2 seconds
-  }
-  //  function showInShowLev(msg) {
-  //  if (t.showLevMsg) clearTimeout(t.showLevMsg);
-  //  showLev.innerHTML=msg;
-  //  //t.showLevMsg = setTimeout(() => showLev.innerHTML="&nbsp;",1000);
-  // }
-
-
-  switch (inp) {
-    case 'status-game-over':
-      showInStatus("Game over");
-      break;
-    case 'status-new':
-      showInStatus("New game");
-      break;
-    case 'status-next-level':
-      showInStatus("Great! Next level.");
-      break;
-    case 'status-try-again':
-      showInStatus("Please try again.");
-      break;
-    case 'status-won':
-      showInStatus("Congratulations, you beat the game!");
-      break;
-    case 'st-btn-start':
-      stBtn.innerHTML = "Start";
-      break;
-    case 'st-btn-restart':
-      stBtn.innerHTML = "Restart";
-      break;
-    case 'lev-disp':
-      showLev.innerHTML = "Level: " + sequence.length + (maxLev == -1 ? "" : " / " + maxLev);
-      break;
-    case 'lev-previous':
-      showLev.innerHTML = "You reached: " + showLev.innerHTML;
-      break;
-    case 'lev-easy':
-      levBtn.innerHTML = "Easy";
-      $('#max-level').attr('title', 'Beat level '+maxLev+' to win').tooltip('fixTitle').tooltip('show');
-      break;
-    case 'lev-medium':
-      levBtn.innerHTML = "Medium";
-      $('#max-level').attr('title', 'Beat level '+maxLev+' to win').tooltip('fixTitle').tooltip('show');
-      break;
-    case 'lev-hard':
-      levBtn.innerHTML = "Hard";
-      $('#max-level').attr('title', 'Beat level '+maxLev+' to win').tooltip('fixTitle').tooltip('show');
-      break;
-    case 'lev-inf':
-      levBtn.innerHTML = "Infinite";
-      $('#max-level').attr('title', 'No level cap').tooltip('fixTitle').tooltip('show');
-      break;
-    case 'lev-disable':
-      levBtn.disabled=true;
-      break;
-    case 'lev-enable':
-      levBtn.disabled=false;
-      break;
-  }
-
 }
 
 function addStep() {
