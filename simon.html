@@ -206,7 +206,7 @@ const btn = [
 
 $(document).ready(function() {
   scaleFonts();
-  allButtonsGo('cycle');
+  allButtonsGo('startCycle');
   $('[data-toggle="tooltip"]').tooltip({
     trigger : 'hover'
   });
@@ -265,7 +265,7 @@ function updDisplay(inp, arg) {
   const stBtn = document.getElementById("start-btn");
   const status = document.getElementById("status");
   const strictB = document.getElementById("strict-btn");
-  
+
   function showInStatus(msg) {
     if (t.statusMsg) clearTimeout(t.statusMsg); // Clear any existing status message timers
     status.innerHTML=msg;
@@ -333,8 +333,6 @@ function updDisplay(inp, arg) {
   }
 }
 
-
-
 function restart() { // Handles both starting and restarting
   for (let prop in t) clearTimeout(t[prop]); // Clear all timeouts and setIntervals
   updDisplay('st-btn-restart');
@@ -348,27 +346,55 @@ function restart() { // Handles both starting and restarting
 }
 
 function allButtonsGo(ar) { // Make all buttons lit or dark
-  if (ar == 'lit') {
-    btn.forEach((i) => i.elem.className = i.lClass);
-  } else if (ar == 'dark') {
-    btn.forEach((i) => i.elem.className = i.dClass);
-  } else { // cycle
-    let l = 0; let d = 3;
-    t.cycle = setInterval(function() {
-      l += 1; d +=1;
-      l = (l > 3 ? 0 : l );
-      d = (d > 3 ? 0 : d );
-      btn[l].elem.className = btn[l].lClass;
-      btn[d].elem.className = btn[d].dClass;
-    },1000);
+  switch (ar) {
+    case 'lit': 
+      btn.forEach((i) => i.elem.className = i.lClass);
+      break;
+    case 'dark': 
+      btn.forEach((i) => i.elem.className = i.dClass);
+      break;
+    case 'startCycle': // Gentle round-the-clock
+      let l = 0; let d = 3;
+      t.startCycle = setInterval(function() {
+        l += 1; d +=1;
+        l = (l > 3 ? 0 : l );
+        d = (d > 3 ? 0 : d );
+        btn[l].elem.className = btn[l].lClass;
+        btn[d].elem.className = btn[d].dClass;
+      },1000);
+      break;
+    case 'loseCycle': // All-lit to all-dark
+      allButtonsGo('lit');
+      let dd = 3;
+      t.loseCycle = setInterval(function() {
+        btn[dd].elem.className = btn[dd].dClass;
+        dd -= 1;
+        if (dd<0) clearInterval(t.loseCycle);
+      },400);
+      break;
+      case 'winCycle': // Fast round-the-clock then all-lit
+      let lgh = 0; let drk = 3; let e = 0;
+      t.winCycle = setInterval(function() {
+        lgh += 1; drk +=1;
+        lgh = (lgh > 3 ? 0 : lgh );
+        drk = (drk > 3 ? 0 : drk );
+        btn[lgh].elem.className = btn[lgh].lClass;
+        btn[drk].elem.className = btn[drk].dClass;
+        e +=1;
+        if (e > 7) {
+          allButtonsGo('lit');
+          clearInterval(t.winCycle);
+        }
+      },200);
   }
 }
 
 function gameOver() {
   updDisplay('status-game-over');
   updDisplay('st-btn-start');
+  updDisplay('lev-enable');
   updDisplay('lev-previous');
-  allButtonsGo('cycle');
+  allButtonsGo('startCycle');
   sequence.length = 0; // So system recognises the game's over
 }
 
@@ -387,6 +413,7 @@ function pressSB(btnPressed) {
       updDisplay('lev-disable'); // Turn off level adjust button
     }
     if (sequence.length >= maxLev) {
+      allButtonsGo('winCycle');
       updDisplay("status-won");
       t.gameWonTO = setTimeout(()=>gameOver(), 2000);
     } else {
@@ -398,7 +425,8 @@ function pressSB(btnPressed) {
 
 function wrongMove() {
   if(strict) {
-    updDisplay('status-game-over')
+    allButtonsGo('loseCycle');
+    updDisplay('status-game-over');
     t.wrongMoveTO = setTimeout(()=>gameOver(), 2000);
   } else {
     updDisplay('status-try-again');
